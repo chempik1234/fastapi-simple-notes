@@ -1,8 +1,9 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
+from utils.utils_jwt import create_access_token, create_refresh_token, decode_token
 
 from models.models import User
-from schema.user_schema import SchemaUser, SchemaUserOptional
+from schema.user_schema import SchemaUser, SchemaUserOptional, SchemaUserWithPassword
 from utils.password_utils import get_hashed_password
 
 
@@ -30,7 +31,7 @@ async def get_user_by_login(db: AsyncSession, login: str) -> User | None:
     return result.scalars().first()
 
 
-async def create_user(db: AsyncSession, user: SchemaUser) -> User | None:
+async def create_user(db: AsyncSession, user: SchemaUserWithPassword) -> User | None:
     """
     CRUD async POST that creates and returns the user
     :param db: AsyncSession that executes the statement
@@ -82,4 +83,7 @@ async def get_user_by_token(db: AsyncSession, token: str) -> User | None:
     :param token: a JWT that defines the searched user
     :return: found User or None if it couldn't be found
     """
-    return await db.sync_session.query(User).first()
+    token_dict = decode_token(token)
+    login = token_dict.get('sub')
+    if login:
+        return await get_user_by_login(db, login)

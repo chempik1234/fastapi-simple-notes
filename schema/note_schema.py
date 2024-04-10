@@ -6,6 +6,9 @@ from pydantic import BaseModel
 class SchemaNote(BaseModel):
     title: str
     content: str
+
+
+class SchemaNoteUserId(SchemaNote):
     user_id: int
 
 
@@ -13,7 +16,7 @@ class SchemaNoteList(BaseModel):
     notes: list[SchemaNote]
 
 
-class SchemaNoteDB(SchemaNote):
+class SchemaNoteDB(SchemaNoteUserId):
     id: Optional[int] = None
 
     class Config:

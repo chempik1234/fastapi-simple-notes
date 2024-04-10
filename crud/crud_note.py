@@ -40,7 +40,7 @@ async def create_note(db: AsyncSession, note: SchemaNote, user: User) -> Note:
     :param user: the linked User that is set as the author
     :return: created Note
     """
-    db_note = Note(title=note.title, content=note.content, user_id=user)
+    db_note = Note(title=note.title, content=note.content, user_id=user.id)
     db.add(db_note)
     await db.commit()
     await db.refresh(db_note)
