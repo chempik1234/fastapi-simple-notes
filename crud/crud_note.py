@@ -20,7 +20,7 @@ async def get_note_list(db: AsyncSession, user_id: Optional[int]) -> list[Note]:
     return db_result.scalars().all()
 
 
-async def get_note(db: AsyncSession, note_id: int) -> Note | None:
+async def get_note(db: AsyncSession, note_id: int) -> Optional[Note]:
     """
     CRUD async GET that returns the Note with given note_id
     :param db: AsyncSession that executes the statement

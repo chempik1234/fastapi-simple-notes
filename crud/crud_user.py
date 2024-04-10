@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils.utils_jwt import create_access_token, create_refresh_token, decode_token
@@ -7,7 +9,7 @@ from schema.user_schema import SchemaUser, SchemaUserOptional, SchemaUserWithPas
 from utils.password_utils import get_hashed_password
 
 
-async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
+async def get_user_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
     """
     CRUD async GET that returns the user with given id
     :param db: AsyncSession that executes the statement
@@ -19,7 +21,7 @@ async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
     return result.scalars().first()
 
 
-async def get_user_by_login(db: AsyncSession, login: str) -> User | None:
+async def get_user_by_login(db: AsyncSession, login: str) -> Optional[User]:
     """
     CRUD async GET that returns the user with given id
     :param db: AsyncSession that executes the statement
@@ -31,7 +33,7 @@ async def get_user_by_login(db: AsyncSession, login: str) -> User | None:
     return result.scalars().first()
 
 
-async def create_user(db: AsyncSession, user: SchemaUserWithPassword) -> User | None:
+async def create_user(db: AsyncSession, user: SchemaUserWithPassword) -> Optional[User]:
     """
     CRUD async POST that creates and returns the user
     :param db: AsyncSession that executes the statement
@@ -46,7 +48,7 @@ async def create_user(db: AsyncSession, user: SchemaUserWithPassword) -> User | 
         return new_user
 
 
-async def change_user(db: AsyncSession, user_id: int, user: SchemaUserOptional) -> User | None:
+async def change_user(db: AsyncSession, user_id: int, user: SchemaUserOptional) -> Optional[User]:
     """
     CRUD async POST that creates and returns the user
     :param db: AsyncSession that executes the statement
@@ -76,7 +78,7 @@ async def delete_user(db: AsyncSession, user_id: int) -> None:
     await db.commit()
 
 
-async def get_user_by_token(db: AsyncSession, token: str) -> User | None:
+async def get_user_by_token(db: AsyncSession, token: str) -> Optional[User]:
     """
     Async function that uses a token to get current user
     :param db: AsyncSession that executes the statement
