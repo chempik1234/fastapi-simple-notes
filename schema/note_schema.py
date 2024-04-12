@@ -3,22 +3,24 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class SchemaNote(BaseModel):
-    id: int
-    user_id: int
+class SchemaNoteBasic(BaseModel):
     title: str
     content: str
 
 
-class SchemaNoteUserId(SchemaNote):
-    pass
+class SchemaNoteWithId(SchemaNoteBasic):
+    id: int
+
+
+class SchemaNoteWithUserId(SchemaNoteWithId):
+    user_id: int
 
 
 class SchemaNoteList(BaseModel):
-    notes: list[SchemaNote]
+    notes: list[SchemaNoteWithUserId]
 
 
-class SchemaNoteDB(SchemaNoteUserId):
+class SchemaNoteDB(SchemaNoteWithUserId):
     # id: Optional[int] = None
 
     class Config:

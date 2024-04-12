@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from sqlalchemy.orm import sessionmaker, scoped_session
 from core.config import settings
 
-engine = create_async_engine(settings.POSTGRES_DATABASE_URL, echo=True)  # SQLALCHEMY_DATABASE_URL
-SessionLocal = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession, future=True)
+engine = create_engine(settings.POSTGRES_DATABASE_URL, echo=True)  # SQLALCHEMY_DATABASE_URL
+SessionLocal = sessionmaker(engine, expire_on_commit=False, future=True)
 # sync_engine = create_engine(settings.POSTGRES_DATABASE_URL, echo=True)  # SYNC_SQLALCHEMY_DATABASE_URL
 # SyncSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=sync_engine)
 

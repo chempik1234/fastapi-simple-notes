@@ -2,7 +2,8 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 
 from api.deps import CurrentUser, DBSession
-from schema.note_schema import SchemaNote, SchemaNoteList, SchemaNoteDB, SchemaNoteOptional
+from schema.note_schema import SchemaNoteBasic, SchemaNoteList, SchemaNoteDB, SchemaNoteOptional, SchemaNoteWithId, \
+    SchemaNoteWithUserId
 from crud import crud_note
 
 router = APIRouter()
@@ -14,7 +15,7 @@ async def get_notes(db: DBSession, user_id: Optional[int]) -> SchemaNoteList:
     return SchemaNoteList(notes=notes)
 
 
-@router.get("/notes/{note_id}", response_model=SchemaNote)
+@router.get("/notes/{note_id}", response_model=SchemaNoteWithUserId)
 async def get_note(db: DBSession, note_id: int):
     note = await crud_note.get_note(db, note_id)
     if note:
@@ -24,12 +25,12 @@ async def get_note(db: DBSession, note_id: int):
 
 
 @router.post('/notes/', response_model=SchemaNoteDB)
-async def create_note(db: DBSession, note: SchemaNote, current_user: CurrentUser):
+async def create_note(db: DBSession, note: SchemaNoteBasic, current_user: CurrentUser):
     created_note = await crud_note.create_note(db, note, current_user)
     return created_note
 
 
-@router.put('/notes/{note_id}', response_model=SchemaNote)
+@router.put('/notes/{note_id}', response_model=SchemaNoteWithUserId)
 async def change_note(db: DBSession, note_id: int, note: SchemaNoteOptional):
     changed_note = await crud_note.change_note(db, note_id, note)
     if not changed_note:
