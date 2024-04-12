@@ -14,7 +14,8 @@ async def get_db() -> AsyncSession:
         try:
             yield session
         finally:
-            session.close()
+            print("CLOSING")
+            await session.close()
 
 
 async def get_current_user(
