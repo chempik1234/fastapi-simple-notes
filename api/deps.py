@@ -11,7 +11,10 @@ from utils.utils_jwt import oauth2_scheme
 
 async def get_db() -> AsyncSession:
     async with SessionLocal() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()
 
 
 async def get_current_user(
