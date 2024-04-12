@@ -4,12 +4,14 @@ from pydantic import BaseModel
 
 
 class SchemaNote(BaseModel):
+    id: int
+    user_id: int
     title: str
     content: str
 
 
 class SchemaNoteUserId(SchemaNote):
-    user_id: int
+    pass
 
 
 class SchemaNoteList(BaseModel):
@@ -17,7 +19,7 @@ class SchemaNoteList(BaseModel):
 
 
 class SchemaNoteDB(SchemaNoteUserId):
-    id: Optional[int] = None
+    # id: Optional[int] = None
 
     class Config:
         orm_mode = True

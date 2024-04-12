@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class SchemaUser(BaseModel):
+    id: int
     login: str
 
 
@@ -12,7 +13,7 @@ class SchemaUserWithPassword(SchemaUser):
 
 
 class SchemaUserDb(SchemaUserWithPassword):
-    id: int
+    # id: int
 
     class Config:
         orm_mode = True
@@ -23,7 +24,8 @@ class SchemaUserOptional(BaseModel):
     password: Optional[str]
 
 
-class SchemaUserLogin(SchemaUser):
+class SchemaUserLogin(BaseModel):
+    login: str
     password: str
 
 
