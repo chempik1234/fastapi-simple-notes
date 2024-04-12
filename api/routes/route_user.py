@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 
-from api.deps import CurrentUser, DBSession
+from api.deps import CurrentUser, Depends, get_db, DBSession
 from schema.user_schema import SchemaUser, SchemaUserOptional, SchemaUserDb, SchemaUserWithToken, \
     SchemaUserWithPassword, SchemaUserLogin, StupidOpenApiSchemaLogin
 from crud import crud_user
@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.get('/users/{user_id}', response_model=SchemaUser)
-async def get_user_by_id(db: DBSession, user_id: int) -> SchemaUser:
+async def get_user_by_id(user_id: int, db = Depends(get_db)) -> SchemaUser:
     user = await crud_user.get_user_by_id(db, user_id)
     if user:
         return user
@@ -22,7 +22,7 @@ async def get_user_by_id(db: DBSession, user_id: int) -> SchemaUser:
 
 
 @router.get('/users/by-login/{login}', response_model=SchemaUser)
-async def get_user_by_login(db: DBSession, login: str) -> SchemaUser:
+async def get_user_by_login(login: str, db = Depends(get_db)) -> SchemaUser:
     user = await crud_user.get_user_by_login(db, login)
     if user:
         return user
@@ -31,7 +31,7 @@ async def get_user_by_login(db: DBSession, login: str) -> SchemaUser:
 
 
 @router.post('/users/', response_model=SchemaUserDb)
-async def create_user(db: DBSession, user: SchemaUserWithPassword):
+async def create_user(user: SchemaUserWithPassword, db = Depends(get_db)):
     existing_user = await crud_user.get_user_by_login(db, user.login)
     if existing_user:
         raise HTTPException(400, "Пользователь с таким login уже есть.")
@@ -43,7 +43,7 @@ async def create_user(db: DBSession, user: SchemaUserWithPassword):
 
 
 @router.put('/users/{user_id}', response_model=SchemaUserDb)
-async def put_user(db: DBSession, user_id: int, user: SchemaUserOptional):
+async def put_user(user_id: int, user: SchemaUserOptional, db = Depends(get_db)):
     changed_user = await crud_user.change_user(db, user_id=user_id, user=user)
     if changed_user:
         return changed_user
@@ -52,12 +52,12 @@ async def put_user(db: DBSession, user_id: int, user: SchemaUserOptional):
 
 
 @router.delete('/users/{user_id}')
-async def delete_user(db: DBSession, user_id: int):
+async def delete_user(user_id: int, db = Depends(get_db)):
     await crud_user.delete_user(db, user_id)
 
 
 @router.post("/sign-up", response_model=SchemaUserWithToken)
-async def user_sign_up(db: DBSession, user: SchemaUserWithPassword) -> SchemaUser:
+async def user_sign_up(user: SchemaUserWithPassword, db = Depends(get_db)) -> SchemaUser:
     existing_user = await crud_user.get_user_by_login(db, user.login)
     if existing_user:
         raise HTTPException(400, "Пользователь с таким login уже есть.")
@@ -72,7 +72,7 @@ async def user_sign_up(db: DBSession, user: SchemaUserWithPassword) -> SchemaUse
 
 
 @router.post("/token/", response_model=StupidOpenApiSchemaLogin)
-async def user_token(db: DBSession, response: Response, form_data: OAuth2PasswordRequestForm = Depends()) -> (
+async def user_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(get_db)) -> (
         StupidOpenApiSchemaLogin):
     existing_user = await crud_user.get_user_by_login(db, form_data.username)
     if not existing_user:
