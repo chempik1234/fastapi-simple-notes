@@ -12,7 +12,8 @@ router = APIRouter()
 @router.get("/notes/", response_model=SchemaNoteList)
 async def get_notes(db: DBSession, user_id: Optional[int]) -> SchemaNoteList:
     notes = await crud_note.get_note_list(db, user_id)
-    return SchemaNoteList(notes=notes)
+    valid_notes = [SchemaNoteWithUserId(title=i.title, content=i.content, id=i.id, user_id=i.user_id) for i in notes]
+    return SchemaNoteList(notes=valid_notes)
 
 
 @router.get("/notes/{note_id}", response_model=SchemaNoteWithUserId)
