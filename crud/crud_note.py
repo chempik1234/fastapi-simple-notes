@@ -1,10 +1,22 @@
 from typing import Optional
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select, update, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from models.models import Note, User
 from schema.note_schema import SchemaNoteBasic, SchemaNoteOptional
+
+
+async def get_note_amount(db: Session, user_id: int) -> int:
+    """
+    CRUD async GET that returns the size of a list of Notes filtered by user_id
+    :param db: Session that executes the statement
+    :param user_id: parameter that defines the user (required)
+    :return: count of found Notes
+    """
+    statement = select(Note).where(Note.user_id == user_id).with_only_columns(func.count())
+    db_result = db.execute(statement)
+    return db_result.scalar()
 
 
 async def get_note_list(db: Session, user_id: Optional[int]) -> list[Note]:

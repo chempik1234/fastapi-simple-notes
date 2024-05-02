@@ -3,6 +3,10 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class SchemaNoteAmount(BaseModel):
+    amount: int
+
+
 class SchemaNoteBasic(BaseModel):
     title: str
     content: str

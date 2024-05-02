@@ -3,10 +3,16 @@ from fastapi import APIRouter, HTTPException
 
 from api.deps import CurrentUser, DBSession
 from schema.note_schema import SchemaNoteBasic, SchemaNoteList, SchemaNoteDB, SchemaNoteOptional, SchemaNoteWithId, \
-    SchemaNoteWithUserId
+    SchemaNoteWithUserId, SchemaNoteAmount
 from crud import crud_note
 
 router = APIRouter()
+
+
+@router.get("/notes/amount/{user_id}", response_model=SchemaNoteAmount)
+async def get_notes_amount(db: DBSession, user_id: int) -> SchemaNoteAmount:
+    notes = await crud_note.get_note_amount(db, user_id)
+    return SchemaNoteAmount(amount=notes)
 
 
 @router.get("/notes/", response_model=SchemaNoteList)
